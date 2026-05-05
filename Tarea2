@@ -1,1 +1,74 @@
 
+use db_jardineria
+go
+
+select count(*) as total_clientes
+from cliente
+
+select * from cliente
+
+select count(limite_credito) As clientes_con_credito
+From cliente;
+
+select sum(limite_credito) as total_credito
+from cliente;
+
+select AVG(limite_credito) as Promedio_credito
+From cliente;
+
+select MIN(limite_credito) as Total_credito_minimo
+from cliente;
+
+select MAX(limite_credito) as Total_credito_maximo
+from cliente
+
+select 
+count(limite_credito) As clientes_con_credito, 
+sum(limite_credito) as total_credito, 
+AVG(limite_credito) as Promedio_credito,
+MIN(limite_credito) as Total_credito_minimo,
+MAX(limite_credito) as Total_credito_maximo
+from cliente;
+
+Select * from pedido
+
+select
+COUNT(codigo_pedido) as Pedidos_totales,
+MAX (fecha_pedido) as Fecha_maxima,
+min(fecha_pedido) as Fecha_minima
+from pedido;
+
+select codigo_cliente, count (*) as Total_de_Pedidos
+from pedido
+group by codigo_cliente 
+having count (*) > 10;
+
+Select * from producto
+
+select gama, AVG(precio_venta) as Promedio_precio
+from producto
+group by gama
+having AVG(precio_venta) > 10;
+
+Select * from pago
+
+select codigo_cliente, sum (total) as Total_pagado
+from pago
+group by codigo_cliente 
+having sum (total) > 10000;
+
+select codigo_pedido, sum (cantidad) as total_productos
+from detalle_pedido
+group by codigo_pedido
+having sum (cantidad)>200;
+
+select pais, count (nombre_cliente) as clientes_pais
+from cliente
+group by pais
+having count (nombre_cliente) >= 4;
+
+
+select codigo_oficina, count(*) as cantidad_empleados
+from empleado
+group by codigo_oficina
+having count (*) >=2;
