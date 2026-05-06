@@ -1,0 +1,62 @@
+use db_jardineria
+go
+
+---Consultas básicas SQL----
+select * from cliente
+go
+---  <> diferente -----
+select * from cliente WHERE nombre_contacto <> 'Jose';
+---  = igual -----
+select nombre_contacto from cliente where nombre_cliente = 'Lasas S.A.';
+---  % parecido  -----
+select nombre_contacto from cliente where nombre_contacto LIKE 'luis%';
+---  % que terminen en %an  -----
+select nombre_contacto from cliente where nombre_contacto LIKE '%an';
+--- % que empiecen con J ----
+select nombre_contacto from cliente where nombre_contacto LIKE 'J%';
+
+--- %b% que en algun lugar tengan ---
+select nombre_contacto from cliente where nombre_contacto LIKE '%b%';
+
+--- > limite menor o mayor 
+select * from cliente where limite_credito > 3000;
+select * from cliente where nombre_contacto = 'Anne' AND limite_credito > 18;
+
+----  operador logico AND --- 
+select * from cliente where limite_credito > 3000 AND ciudad = 'Miami';
+---cualquier cuidad  ---
+select * from cliente where limite_credito > 3000 OR ciudad = 'Miami';
+--- algun espacio en NULL ----
+select * from cliente where linea_direccion2 IS NULL;
+select * from cliente where NOT ciudad = 'San Francisco';
+
+select * from cliente where 
+    ciudad IN ('Miami', 'Madrid')
+    AND codigo_empleado_rep_ventas BETWEEN 5 AND 8
+    AND nombre_cliente LIKE 'D%';
+
+----ORDER BY ASC  orden alfabético ------
+select * from cliente order by nombre_cliente ASC;
+----ORDER BY DESC  orden alfabético ------
+select * from cliente order by nombre_cliente DESC;
+----ORDER BY DESC  orden  ------
+select * from cliente order by limite_credito DESC;
+
+select * from oficina
+go
+
+insert into oficina (codigo_oficina, ciudad, pais, region, codigo_postal,telefono,linea_direccion1,linea_direccion2)
+values ('BCN-ES2','Limon','Costa Rica','Centro America','aaa',+50683385336,'Guapiles','pococi');
+
+select * from oficina
+go
+
+UPDATE oficina SET 
+    ciudad = 'Barcelona',
+    pais = 'España',
+    region = 'Barcelona',
+    codigo_postal = '08019',
+    telefono = '+34 93 3561182',
+    linea_direccion1 = 'Avenida Diagonal, 38',
+    linea_direccion2 = '3A escalera Derecha'
+WHERE codigo_oficina = 'BCN-ES';

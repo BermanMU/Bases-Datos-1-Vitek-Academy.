@@ -1,0 +1,129 @@
+use db_jardineria
+
+SELECT 
+    c.nombre_cliente,
+    p.codigo_pedido,
+    p.fecha_pedido
+FROM cliente c
+INNER JOIN pedido p
+ON c.codigo_cliente = p.codigo_cliente;
+
+
+SELECT 
+    c.nombre_cliente,
+    p.codigo_pedido,
+    pr.nombre AS producto,
+    dp.cantidad
+FROM cliente c
+INNER JOIN pedido p ON c.codigo_cliente = p.codigo_cliente
+INNER JOIN detalle_pedido dp ON p.codigo_pedido = dp.codigo_pedido
+INNER JOIN producto pr ON dp.codigo_producto = pr.codigo_producto;
+
+SELECT 
+    c.nombre_cliente,
+    p.codigo_pedido
+FROM cliente c
+LEFT JOIN pedido p
+ON c.codigo_cliente = p.codigo_cliente;
+
+SELECT c.nombre_cliente
+FROM cliente c
+LEFT JOIN pedido p 
+ON c.codigo_cliente = p.codigo_cliente
+WHERE p.codigo_pedido IS NULL;
+
+SELECT 
+    c.nombre_cliente,
+    p.codigo_pedido
+FROM cliente c
+RIGHT JOIN pedido p
+ON c.codigo_cliente = p.codigo_cliente;
+
+SELECT 
+    p.codigo_pedido,
+    pr.nombre,
+    dp.cantidad
+FROM producto pr
+RIGHT JOIN detalle_pedido dp 
+ON pr.codigo_producto = dp.codigo_producto
+RIGHT JOIN pedido p 
+ON dp.codigo_pedido = p.codigo_pedido;
+
+-----Dataset de ventas (detalle completo)-------
+
+SELECT 
+    p.codigo_pedido,
+    p.fecha_pedido,
+    c.nombre_cliente,
+    pr.nombre AS producto,
+    dp.cantidad,
+    dp.precio_unidad,
+    (dp.cantidad * dp.precio_unidad) AS total_linea
+FROM pedido p
+INNER JOIN cliente c ON p.codigo_cliente = c.codigo_cliente
+INNER JOIN detalle_pedido dp ON p.codigo_pedido = dp.codigo_pedido
+INNER JOIN producto pr ON dp.codigo_producto = pr.codigo_producto;
+
+----Dataset de ingresos por cliente-----
+SELECT 
+    c.codigo_cliente,
+    c.nombre_cliente,
+    SUM(dp.cantidad * dp.precio_unidad) AS total_gastado
+FROM cliente c
+INNER JOIN pedido p ON c.codigo_cliente = p.codigo_cliente
+INNER JOIN detalle_pedido dp ON p.codigo_pedido = dp.codigo_pedido
+GROUP BY c.codigo_cliente, c.nombre_cliente
+ORDER BY total_gastado DESC;
+
+-----Dataset de productos más vendidos----
+
+SELECT 
+    pr.codigo_producto,
+    pr.nombre,
+    SUM(dp.cantidad) AS total_vendido,
+    SUM(dp.cantidad * dp.precio_unidad) AS ingresos
+FROM producto pr
+INNER JOIN detalle_pedido dp ON pr.codigo_producto = dp.codigo_producto
+GROUP BY pr.codigo_producto, pr.nombre
+ORDER BY total_vendido DESC;
+
+----Dataset de clientes sin compras (LEFT JOIN)---
+
+SELECT 
+    c.codigo_cliente,
+    c.nombre_cliente
+FROM cliente c
+LEFT JOIN pedido p ON c.codigo_cliente = p.codigo_cliente
+WHERE p.codigo_pedido IS NULL;
+
+----Dataset de ventas por fecha---
+
+SELECT 
+    p.fecha_pedido,
+    SUM(dp.cantidad * dp.precio_unidad) AS ventas_totales
+FROM pedido p
+INNER JOIN detalle_pedido dp ON p.codigo_pedido = dp.codigo_pedido
+GROUP BY p.fecha_pedido
+ORDER BY p.fecha_pedido;
+
+----Dataset cliente + representante de ventas---
+
+
+SELECT 
+    c.nombre_cliente,
+    e.nombre AS empleado,
+    e.apellido1
+FROM cliente c
+LEFT JOIN empleado e 
+ON c.codigo_empleado_rep_ventas = e.codigo_empleado;
+
+----Dataset de pedidos con total---
+SELECT 
+    p.codigo_pedido,
+    c.nombre_cliente,
+    SUM(dp.cantidad * dp.precio_unidad) AS total_pedido
+FROM pedido p
+INNER JOIN cliente c ON p.codigo_cliente = c.codigo_cliente
+INNER JOIN detalle_pedido dp ON p.codigo_pedido = dp.codigo_pedido
+GROUP BY p.codigo_pedido, c.nombre_cliente
+ORDER BY total_pedido DESC;

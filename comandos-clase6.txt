@@ -1,0 +1,67 @@
+SELECT COUNT(*) AS total_clientes
+FROM cliente;
+
+SELECT COUNT(limite_credito) AS clientes_con_credito
+FROM cliente;
+
+SELECT SUM(limite_credito) AS total_credito
+FROM cliente;
+
+SELECT AVG(limite_credito) AS promedio_credito
+FROM cliente;
+
+SELECT MIN(limite_credito) AS credito_minimo
+FROM cliente;
+
+SELECT MAX(limite_credito) AS credito_maximo
+FROM cliente;
+
+SELECT 
+    COUNT(*) AS total_clientes,
+    SUM(limite_credito) AS total_credito,
+    AVG(limite_credito) AS promedio_credito,
+    MIN(limite_credito) AS credito_minimo,
+    MAX(limite_credito) AS credito_maximo
+FROM cliente;
+
+SELECT 
+    COUNT(*) AS total_pedidos,
+    MIN(fecha_pedido) AS primer_pedido,
+    MAX(fecha_pedido) AS ultimo_pedido
+FROM pedido;
+----Total de pedidos por cliente (solo los que tienen más de 5 pedidos)--
+SELECT codigo_cliente, COUNT(*) AS total_pedidos
+FROM pedido
+GROUP BY codigo_cliente
+HAVING COUNT(*) > 5;
+---Promedio de precio de productos por gama (solo gamas caras--
+SELECT gama, AVG(precio_venta) AS promedio_precio
+FROM producto
+GROUP BY gama
+HAVING AVG(precio_venta) > 10;
+
+---Total pagado por cada cliente (solo los que han pagado mucho)--
+SELECT codigo_cliente, SUM(total) AS total_pagado
+FROM pago
+GROUP BY codigo_cliente
+HAVING SUM(total) > 10000;
+
+--Cantidad de empleados por oficina (solo oficinas grandes)
+
+SELECT codigo_oficina, COUNT(*) AS cantidad_empleados
+FROM empleado
+GROUP BY codigo_oficina
+HAVING COUNT(*) > 5;
+
+---Total de productos vendidos por pedido (solo pedidos grandes)
+
+SELECT codigo_pedido, SUM(cantidad) AS total_productos
+FROM detalle_pedido
+GROUP BY codigo_pedido
+HAVING SUM(cantidad) > 100;
+
+---Clientes por país (solo países con muchos clientes)
+SELECT pais, COUNT(*) AS total_clientes
+FROM cliente
+GROUP BY pais
+HAVING COUNT(*) > 3;
