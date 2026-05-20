@@ -1,0 +1,182 @@
+use db_jardineria
+--Subconsultas en WHERE
+----Clientes que han realizado pagos
+SELECT nombre_cliente
+FROM cliente
+WHERE codigo_cliente IN (
+    SELECT codigo_cliente
+    FROM pago
+);
+go
+--Empleados que trabajan en la oficina de Madrid
+
+SELECT nombre, apellido1
+FROM empleado
+WHERE codigo_oficina = (
+    SELECT codigo_oficina
+    FROM oficina
+    WHERE ciudad = 'Madrid'
+);
+go
+
+--Productos con precio mayor al promedio
+SELECT nombre, precio_venta
+FROM producto
+WHERE precio_venta > (
+    SELECT AVG(precio_venta)
+    FROM producto
+);
+go
+
+--Subconsultas en SELECT
+--Mostrar cliente y cantidad total de pagos
+SELECT nombre_cliente,
+       (
+           SELECT COUNT(*)
+           FROM pago
+           WHERE pago.codigo_cliente = cliente.codigo_cliente
+       ) AS total_pagos
+FROM cliente;
+
+--Mostrar producto y precio promedio general
+SELECT nombre,
+       precio_venta,
+       (
+           SELECT AVG(precio_venta)
+           FROM producto
+       ) AS promedio_general
+FROM producto;
+
+--Subconsultas en FROM
+--Promedio de pagos por cliente
+
+SELECT promedio_pagos.promedio
+FROM (
+    SELECT AVG(total) AS promedio
+    FROM pago
+) AS promedio_pagos;
+
+--Clientes con más de 2 pagos
+SELECT datos.codigo_cliente,
+       datos.total_pagos
+FROM (
+    SELECT codigo_cliente,
+           COUNT(*) AS total_pagos
+    FROM pago
+    GROUP BY codigo_cliente
+) AS datos
+WHERE datos.total_pagos > 2;
+
+--Operador IN
+SELECT nombre_cliente
+FROM cliente
+WHERE codigo_cliente IN (
+    SELECT codigo_cliente
+    FROM pago
+);
+
+--Operador NOT IN
+
+SELECT nombre_cliente
+FROM cliente
+WHERE codigo_cliente NOT IN (
+    SELECT codigo_cliente
+    FROM pago
+);
+
+--Operador EXISTS
+
+SELECT nombre_cliente
+FROM cliente c
+WHERE EXISTS (
+    SELECT *
+    FROM pedido p
+    WHERE p.codigo_cliente = c.codigo_cliente
+);
+
+--Sintaxis básica VIEW
+--Ejemplo 1: Vista de clientes
+
+CREATE VIEW vista_cliente AS
+SELECT nombre_cliente, ciudad, pais
+FROM cliente;
+
+SELECT * FROM vista_cliente;
+
+--Ejemplo 2: Vista de productos caros
+
+CREATE VIEW productos_caros AS
+SELECT nombre, precio_venta
+FROM producto
+WHERE precio_venta > 100;
+
+SELECT * FROM productos_caros;
+
+--Ejemplo 3: Vista con JOIN
+
+CREATE VIEW vista_pedidos_clientes AS
+SELECT p.codigo_pedido,
+       c.nombre_cliente,
+       p.fecha_pedido
+FROM pedido p
+INNER JOIN cliente c
+ON p.codigo_cliente = c.codigo_cliente;
+
+SELECT * FROM vista_pedidos_clientes;
+
+--Ejemplo 4: Vista con funciones de agregación
+
+CREATE VIEW total_pagos_cliente AS
+SELECT codigo_cliente,
+       SUM(total) AS total_pagado
+FROM pago
+GROUP BY codigo_cliente;
+
+SELECT * FROM total_pagos_cliente;
+
+--Eliminar una vista
+
+DROP VIEW vista_clientes;
+
+---Ejemplo 1: Productos caros
+--Sin CTE
+
+SELECT nombre, precio_venta
+FROM producto
+WHERE precio_venta > (
+    SELECT AVG(precio_venta)
+    FROM producto
+);
+
+--Con CTE
+
+WITH promedio AS (
+    SELECT AVG(precio_venta) AS precio_promedio
+    FROM producto
+)
+SELECT nombre, precio_venta
+FROM producto, promedio
+WHERE precio_venta > promedio.precio_promedio;
+
+--Ejemplo 2: Total de pagos por cliente
+
+WITH pagos_cliente AS (
+    SELECT codigo_cliente,
+           SUM(total) AS total_pagado
+    FROM pago
+    GROUP BY codigo_cliente
+)
+SELECT *
+FROM pagos_cliente;
+
+--Ejemplo 3: Clientes con pagos altos
+
+WITH pagos_cliente AS (
+    SELECT codigo_cliente,
+           SUM(total) AS total_pagado
+    FROM pago
+    GROUP BY codigo_cliente
+)
+SELECT *
+FROM pagos_cliente
+WHERE total_pagado > 10000;

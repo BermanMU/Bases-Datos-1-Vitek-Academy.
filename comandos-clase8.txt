@@ -1,0 +1,130 @@
+use db_jardineria
+go
+
+----Buscar registros con valores NULL----
+SELECT nombre_cliente, ciudad, region
+FROM cliente
+WHERE region IS NULL;
+
+----Empleados que no tienen jefe asignado---
+SELECT nombre, apellido1, codigo_jefe
+FROM empleado
+WHERE codigo_jefe IS NULL;
+
+---Pedidos que aún no han sido entregados---
+SELECT codigo_pedido, fecha_pedido, fecha_entrega
+FROM pedido
+WHERE fecha_entrega IS NULL;
+
+---Buscar registros que NO son NULL (IS NOT NULL)
+---Clientes que sí tienen límite de crédito---
+
+SELECT nombre_cliente, limite_credito
+FROM cliente
+WHERE limite_credito IS NOT NULL;
+
+---Oficinas que tienen segunda dirección---
+SELECT ciudad, linea_direccion2
+FROM oficina
+WHERE linea_direccion2 IS NOT NULL;
+
+---Reemplazar valores NULL con COALESCE
+---COALESCE sirve para mostrar otro valor cuando aparece NULL.---
+
+----Mostrar “Sin región” cuando la región sea NULL---
+
+SELECT nombre_cliente,
+       COALESCE(region, 'Sin región') AS region
+FROM cliente;
+
+--Mostrar “No tiene jefe” cuando el empleado no tenga jefe--
+
+SELECT nombre,
+       apellido1,
+       COALESCE(CAST(codigo_jefe AS VARCHAR), 'No tiene jefe') AS jefe
+FROM empleado;
+
+--Mostrar comentarios de pedidos--
+---Si el pedido no tiene comentarios, aparece “Sin comentarios”.---
+
+SELECT codigo_pedido,
+       COALESCE(comentarios, 'Sin comentarios') AS comentarios
+FROM pedido;
+
+---Combinar NULL con condiciones
+--Clientes sin representante de ventas--
+
+SELECT nombre_cliente
+FROM cliente
+WHERE codigo_empleado_rep_ventas IS NULL;
+
+--Clientes con región pero sin código postal--
+
+SELECT nombre_cliente, region, codigo_postal
+FROM cliente
+WHERE region IS NOT NULL
+AND codigo_postal IS NULL;
+
+---Ejemplo usando COALESCE en cálculos
+--Mostrar límite de crédito
+--Si es NULL, mostrar 0.
+SELECT nombre_cliente,
+       COALESCE(limite_credito, 0) AS limite_credito
+FROM cliente;
+
+--Detectar NULL con IS NULL
+--Clientes sin región
+SELECT nombre_cliente, ciudad, region
+FROM cliente
+WHERE region IS NULL;
+
+--Empleados sin jefe asignado
+SELECT nombre, apellido1, codigo_jefe
+FROM empleado
+WHERE codigo_jefe IS NULL;
+
+--Pedidos pendientes de entrega
+SELECT codigo_pedido, fecha_pedido, fecha_entrega
+FROM pedido
+WHERE fecha_entrega IS NULL;
+
+--Oficinas sin segunda dirección
+SELECT ciudad, linea_direccion2
+FROM oficina
+WHERE linea_direccion2 IS NULL;
+--Clientes sin representante de ventas
+SELECT nombre_cliente, codigo_empleado_rep_ventas
+FROM cliente
+WHERE codigo_empleado_rep_ventas IS NULL;
+
+--Clientes sin límite de crédito
+SELECT nombre_cliente, limite_credito
+FROM cliente
+WHERE limite_credito IS NULL;
+
+--Pedidos sin comentarios
+SELECT codigo_pedido, comentarios
+FROM pedido
+WHERE comentarios IS NULL;
+
+--Pedidos que ya fueron entregados
+SELECT codigo_pedido, fecha_entrega
+FROM pedido
+WHERE fecha_entrega IS NOT NULL;
+
+--Clientes con representante de ventas
+SELECT nombre_cliente, codigo_empleado_rep_ventas
+FROM cliente
+WHERE codigo_empleado_rep_ventas IS NOT NULL;
+
+--Clientes con límite de crédito
+SELECT nombre_cliente, limite_credito
+FROM cliente
+WHERE limite_credito IS NOT NULL;
+
+---Clientes que tienen región y límite de crédito
+
+SELECT nombre_cliente, region, limite_credito
+FROM cliente
+WHERE region IS NOT NULL
+AND limite_credito IS NOT NULL;
